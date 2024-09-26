@@ -26,24 +26,15 @@ typedef struct {
 void LoadBook(BookList *list, const char *filename) {
     // 设置区域设置为支持多字节字符
     setlocale(LC_ALL, "");
-
     printf("正在加载书目数据，文件路径：%s\n", filename);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         perror("无法打开文件");
         exit(EXIT_FAILURE); // 直接退出程序
     }
-
     printf("文件读取成功，开始加载书目...\n");
-
     char line[256];
-    // 跳过第一行（假设第一行是列名）
-    if (fgets(line, sizeof(line), file) == NULL) {
-        perror("读取文件失败");
-        fclose(file);
-        return;
-    }
-
+    // 读取并处理每一行数据
     while (fgets(line, sizeof(line), file)) {
         Book *newBook = (Book *)malloc(sizeof(Book));
         if (newBook == NULL) {
@@ -51,8 +42,6 @@ void LoadBook(BookList *list, const char *filename) {
             fclose(file);
             return;
         }
-
-        // 使用 sscanf 读取每一行的数据
         int year;
         if (sscanf(line, "%19[^,],%99[^,],%99[^,],%99[^,],%d",
                    newBook->id, newBook->name, newBook->author, newBook->publisher, &year) == 5) {
@@ -67,7 +56,6 @@ void LoadBook(BookList *list, const char *filename) {
             free(newBook); // 释放未使用的内存
         }
     }
-
     fclose(file);
     printf("所有书目加载完成。\n");
 }
